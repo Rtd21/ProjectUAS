@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: project-uas
+    env: docker
+    plan: free
+    dockerfilePath: Dockerfile
