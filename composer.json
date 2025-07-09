@@ -1,0 +1,13 @@
+{
+    "name": "shall/uas",
+    "autoload": {
+        "psr-4": {
+            "Shall\\Uas\\": "src/"
+        }
+    },
+    "require": {
+        "phpmailer/phpmailer": "^6.10",
+        "phpoffice/phpspreadsheet": "^4.4",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

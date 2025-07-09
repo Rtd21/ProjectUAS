@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Gambar ke Supabase Storage</title>
+</head>
+<body>
+  <h1>Upload Gambar ke Supabase Storage</h1>
+
+  <input type="file" id="uploadFile" accept="image/*" />
+  <button id="uploadBtn">Upload</button>
+
+  <div id="result" style="margin-top: 20px;"></div>
+
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js'
+
+    // Ganti ini dengan milikmu
+    const supabaseUrl = 'https://mxajscgaszabmustddfq.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14YWpzY2dhc3phYm11c3RkZGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1Mjg5MTQsImV4cCI6MjA2NTEwNDkxNH0.jyueIxwoYJf3sbDra98uN3vD6MYrvX_ZWN6hwyPzD38'
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    document.getElementById('uploadBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('uploadFile')
+      const resultDiv = document.getElementById('result')
+      const file = fileInput.files[0]
+
+      if (!file) {
+        resultDiv.textContent = "⚠️ Silakan pilih file gambar terlebih dahulu."
+        return
+      }
+
+      const fileName = `${Date.now()}_${file.name}`
+
+      const { data, error } = await supabase
+        .storage
+        .from('berkas.pendaftar') // Ganti dengan nama bucket kamu
+        .upload(fileName, file)
+
+      if (error) {
+        console.error("Upload gagal:", error.message)
+        resultDiv.textContent = "❌ Upload gagal: " + error.message
+      } else {
+        const { data: publicUrlData } = supabase
+          .storage
+          .from('images')
+          .getPublicUrl(fileName)
+
+        resultDiv.innerHTML = `
+          ✅ Upload berhasil!<br>
+          <a href="${publicUrlData.publicUrl}" target="_blank">${publicUrlData.publicUrl}</a><br>
+          <img src="${publicUrlData.publicUrl}" alt="Uploaded Image" style="max-width: 300px; margin-top: 10px;" />
+        `
+      }
+    })
+  </script>
+</body>
+</html>
